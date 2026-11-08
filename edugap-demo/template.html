@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EduGap — Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--p:#4F46E5;--p-soft:#eef0ff;--s:#60A5FA;--bg:#F8FAFC;--sf:#fff;--ink:#1E293B;--mut:#64748b;--line:#e2e8f0;--ok:#16A34A;--warn:#F59E0B;--bad:#EF4444;--r:14px}
+*{box-sizing:border-box}body{margin:0;font-family:'Noto Sans Thai',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button{font:inherit;cursor:pointer}
+.demo{background:#fff7e0;color:#92400e;font-size:13px;padding:8px 16px;text-align:center;border-bottom:1px solid #f3dca0}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 36px)}
+aside{background:var(--sf);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:calc(100vh - 36px)}
+.logo{display:flex;gap:10px;align-items:center;font-weight:700;font-size:19px;padding:4px 10px 2px}.logo .d{width:34px;height:34px;border-radius:10px;background:var(--p);color:#fff;display:grid;place-items:center}
+.tagl{font-size:12px;color:var(--mut);padding:0 10px 14px}
+.nav button{display:flex;gap:12px;align-items:center;width:100%;border:0;background:none;padding:11px 12px;border-radius:10px;color:var(--mut);font-weight:500;text-align:left}
+.nav button:hover{background:var(--bg)}.nav button.on{background:var(--p-soft);color:var(--p)}
+.role{margin-top:auto;border:1px solid var(--line);border-radius:12px;padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.role button,.mrole button{border:0;background:none;padding:8px;border-radius:8px;color:var(--mut);font-weight:500}.role button.on,.mrole button.on{background:var(--ink);color:#fff}
+main{padding:28px 32px 70px;max-width:1120px;width:100%}
+h1{font-size:24px;margin:0 0 4px}.sub{color:var(--mut);margin:0 0 22px}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:var(--r);padding:20px}.card h3{margin:0 0 12px;font-size:16px}
+.stat .n{font-size:28px;font-weight:700;line-height:1.15}.stat .l{color:var(--mut);font-size:13px}
+.btn{display:inline-flex;gap:8px;align-items:center;border:0;background:var(--p);color:#fff;padding:10px 16px;border-radius:10px;font-weight:600}
+.btn.gh{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:6px 12px;font-size:13px}.btn:disabled{opacity:.45;cursor:default}
+:is(.btn,.nav button,input,select,textarea,.chip,.tile,.opt):focus-visible{outline:3px solid #a5b4fc;outline-offset:2px}
+input,select,textarea{width:100%;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 6px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sp{justify-content:space-between}
+.list>*+*{border-top:1px solid var(--line)}.it{padding:12px 0}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--bg);color:var(--mut)}
+.b-strong{background:#dcfce7;color:#166534}.b-dev{background:#fef3c7;color:#92400e}.b-review{background:#fee2e2;color:#991b1b}.b-na{background:#e2e8f0;color:#475569}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.tile{border:0;border-radius:12px;padding:16px;text-align:left;color:#fff;min-height:96px}.tile b{display:block}.tile span{font-size:26px;font-weight:700}
+.t-strong{background:var(--ok)}.t-dev{background:var(--warn);color:#2b1c00}.t-review{background:var(--bad)}.t-na{background:#94a3b8}
+.tile.sel{box-shadow:0 0 0 3px var(--p)}
+.note{display:flex;gap:10px;background:var(--p-soft);color:#312e81;padding:12px 14px;border-radius:12px;font-size:14px;margin-bottom:16px}
+.warnbox{background:#fff7e0;color:#92400e}
+.empty{text-align:center;color:var(--mut);padding:26px}
+.cb{position:relative;height:270px}
+.bar{height:8px;background:var(--bg);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--p)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{width:38px;height:38px;border:1px solid var(--line);background:#fff;border-radius:10px;font-weight:600}.chip.ans{background:var(--p-soft);border-color:#c7d2fe;color:var(--p)}.chip.cur{background:var(--p);color:#fff;border-color:var(--p)}
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:#fff;padding:14px;border-radius:12px;margin-top:10px}.opt.on{border-color:var(--p);background:var(--p-soft)}
+.opt .r{width:20px;height:20px;border:2px solid #cbd5e1;border-radius:50%;flex:none}.opt.on .r{border-color:var(--p);background:radial-gradient(var(--p) 45%,transparent 50%)}
+.ok{color:var(--ok)}.no{color:var(--bad)}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:grid;place-items:center;z-index:20;padding:16px}.modal .card{max-width:420px;width:100%}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;display:flex;gap:10px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}.toast.show{opacity:1}
+.mrole{display:none;gap:6px;margin-bottom:14px}.mrole button{flex:1;border:1px solid var(--line);background:#fff}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+@media(max-width:860px){.app{grid-template-columns:1fr}aside{position:fixed;inset:auto 0 0 0;height:auto;flex-direction:row;padding:6px;z-index:5;border-right:0;border-top:1px solid var(--line)}.logo,.tagl,.role{display:none}.nav{display:flex;width:100%}.nav button{flex-direction:column;gap:2px;font-size:11px;padding:6px 2px;align-items:center;justify-content:center;text-align:center}.g4,.g3{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}main{padding:18px 14px 110px}.mrole{display:flex}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="demo">⚠️ โหมดเดโมในเครื่อง — ข้อมูลทั้งหมดเป็นข้อมูลตัวอย่าง (ผลของเพื่อนร่วมห้อง 24 คนสร้างด้วยตัวสุ่มคงที่) ยังไม่เชื่อม Supabase และจะรีเซ็ตเมื่อรีเฟรช</div>
+<div class="app">
+<aside>
+ <div class="logo"><span class="d">{{icon:graduation-cap}}</span>EduGap</div>
+ <div class="tagl">Understand the Gap. Improve the Learning.</div>
+ <nav class="nav" id="nav"></nav>
+ <div class="role"><button data-r="teacher">ครู</button><button data-r="student">นักเรียน</button></div>
+</aside>
+<main><div class="mrole"><button data-r="teacher">ครู</button><button data-r="student">นักเรียน</button></div><div id="view"></div></main>
+</div>
+<div class="toast" id="toast"></div><div id="modal"></div>
+<script>
+const ICONS={{icons_json}};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]||''}</svg>`;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MIN_N=5, DAY=864e5, NOW=Date.now();
+
+/* ===== DEMO DATA (ไม่ใช่ข้อมูลจริง) ===== */
+const CLASS={name:'ม.2/1 คณิตศาสตร์',subject:'คณิตศาสตร์',grade:'ม.2',code:'EDU-4821',desc:'สมการเชิงเส้นตัวแปรเดียว'};
+const TOPICS=[{id:'t1',name:'ความเข้าใจตัวแปร'},{id:'t2',name:'การย้ายพจน์'},{id:'t3',name:'การแก้สมการเชิงเส้น'},{id:'t4',name:'การแทนค่าและตรวจคำตอบ'}];
+const TF=['ถูก','ผิด'];
+const Q=[
+ {id:'q1',t:'t1',type:'mc',text:'ในสมการ 3x + 5 = 20 ตัวแปรคือข้อใด',o:['x','3','5','20'],c:0,ex:'ตัวแปรคือสัญลักษณ์ที่แทนค่าที่ยังไม่ทราบ ในที่นี้คือ x',pt:1},
+ {id:'q2',t:'t1',type:'tf',text:'ตัวแปรคือสัญลักษณ์ที่ใช้แทนค่าที่ยังไม่ทราบ',o:TF,c:0,ex:'ถูกต้อง เช่น x, y แทนจำนวนที่ต้องหา',pt:1},
+ {id:'q3',t:'t1',type:'mc',text:'สัมประสิทธิ์ของ x ใน 7x − 2 คือข้อใด',o:['7','−2','x','2'],c:0,ex:'สัมประสิทธิ์คือตัวเลขที่คูณอยู่หน้าตัวแปร จึงเป็น 7',pt:1},
+ {id:'q4',t:'t2',type:'mc',text:'จาก x + 6 = 10 เมื่อย้าย 6 ไปอีกข้าง จะได้',o:['x = 10 − 6','x = 10 + 6','x = 6 − 10','x = 6 + 10'],c:0,ex:'ย้ายพจน์ข้ามเครื่องหมายเท่ากับต้องเปลี่ยนเครื่องหมาย + เป็น −',pt:1},
+ {id:'q5',t:'t2',type:'tf',text:'เมื่อย้ายพจน์ข้ามเครื่องหมายเท่ากับ ต้องเปลี่ยนเครื่องหมายของพจน์นั้น',o:TF,c:0,ex:'ถูกต้อง เพราะเป็นการบวกหรือลบทั้งสองข้างด้วยค่าเดียวกัน',pt:1},
+ {id:'q6',t:'t2',type:'mc',text:'จาก 2x − 4 = 6 จะได้ 2x เท่ากับ',o:['10','2','−10','6'],c:0,ex:'ย้าย −4 เป็น +4 จะได้ 2x = 6 + 4 = 10',pt:1},
+ {id:'q7',t:'t3',type:'mc',text:'ถ้า 3x = 12 แล้ว x เท่ากับ',o:['4','9','15','36'],c:0,ex:'หารทั้งสองข้างด้วย 3 ได้ x = 4',pt:1},
+ {id:'q8',t:'t3',type:'mc',text:'คำตอบของ 2x + 5 = 17 คือ',o:['6','11','4','5'],c:0,ex:'2x = 12 จึงได้ x = 6',pt:1},
+ {id:'q9',t:'t3',type:'tf',text:'สมการ x + 3 = 3 มีคำตอบคือ x = 6',o:TF,c:1,ex:'ผิด เพราะ x = 3 − 3 = 0',pt:1},
+ {id:'q10',t:'t4',type:'mc',text:'เมื่อแทน x = 2 ใน 4x − 1 จะได้ค่าเท่าไร',o:['7','9','5','8'],c:0,ex:'4(2) − 1 = 8 − 1 = 7',pt:1},
+ {id:'q11',t:'t4',type:'tf',text:'ถ้าแทนค่าแล้วทั้งสองข้างของสมการเท่ากัน แสดงว่าค่านั้นเป็นคำตอบ',o:TF,c:0,ex:'ถูกต้อง นี่คือการตรวจสอบคำตอบ',pt:1},
+ {id:'q12',t:'t4',type:'mc',text:'สมการใดที่มี x = 5 เป็นคำตอบ',o:['x + 2 = 7','x − 2 = 7','2x = 5','x + 5 = 5'],c:0,ex:'แทน x = 5 ใน x + 2 ได้ 7 ตรงกับด้านขวา',pt:1},
+];
+const A=[
+ {id:'a1',title:'แบบทดสอบ: สมการเชิงเส้นตัวแปรเดียว',qs:Q.map(q=>q.id),pub:true,retake:true},
+ {id:'a2',title:'แบบฝึกหัด: การแก้สมการและการแทนค่า',qs:['q7','q8','q9','q10','q11','q12'],pub:false,retake:true},
+];
+let TH={strong:80,dev:50}; // ครูปรับได้
+let members=['me',...Array.from({length:24},(_,i)=>'s'+(i+1))];
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const R=rng(20261108),P={t1:.88,t2:.62,t3:.42,t4:.7};
+const AT=[];
+members.slice(1).forEach((s,i)=>{const ans={};Q.forEach(q=>{const ok=R()<Math.min(.97,Math.max(.1,P[q.t]+(R()-.5)*.3));ans[q.id]=ok?q.c:(q.o.map((_,k)=>k).filter(k=>k!==q.c)[Math.floor(R()*(q.o.length-1))])});AT.push({id:'h'+i,st:s,a:'a1',at:NOW-(10+i%10)*DAY,ans})});
+const wrong=q=>q.o.findIndex((_,k)=>k!==q.c);
+AT.push({id:'me1',st:'me',a:'a1',at:NOW-21*DAY,ans:Object.fromEntries(Q.map(q=>[q.id,['q1','q2','q3','q4','q10','q11'].includes(q.id)?q.c:wrong(q)]))});
+const ME='me';
+
+/* ===== ENGINE (deterministic, ไม่ใช้ AI) ===== */
+const level=m=>m==null?'na':m>=TH.strong?'strong':m>=TH.dev?'dev':'review';
+const LBL={strong:'เข้าใจดี',dev:'กำลังพัฒนา',review:'ควรทบทวน',na:'ยังไม่ได้ประเมิน'};
+function analyze(at){ // topic mastery = correct / answered (หัวข้อที่ไม่ได้ตอบ = Not Assessed ไม่ใช่ 0%)
+ const qs=A.find(a=>a.id===at.a).qs.map(id=>Q.find(q=>q.id===id));let tot=0,got=0;const per={};
+ TOPICS.forEach(t=>per[t.id]={n:0,ok:0,m:null});
+ qs.forEach(q=>{tot+=q.pt;const v=at.ans[q.id];if(v==null)return;per[q.t].n++;if(v===q.c){per[q.t].ok++;got+=q.pt}});
+ TOPICS.forEach(t=>{const p=per[t.id];p.m=p.n?Math.round(p.ok/p.n*100):null;p.lv=level(p.m)});
+ return{score:Math.round(got/tot*100),got,tot,per};
+}
+function latestPerTopic(st,filter={}){ // ผลล่าสุดของแต่ละหัวข้อ (เฉพาะที่ประเมินแล้ว)
+ const out={};AT.filter(a=>a.st===st&&inF(a,filter)).sort((x,y)=>x.at-y.at).forEach(a=>{const r=analyze(a);TOPICS.forEach(t=>{if(r.per[t.id].m!=null)out[t.id]=r.per[t.id].m})});return out}
+const inF=(a,f)=>(!f.a||a.a===f.a)&&(!f.days||a.at>=NOW-f.days*DAY);
+function classAgg(f){
+ const ms=members.filter(m=>AT.some(a=>a.st===m&&inF(a,f)));const per={};
+ TOPICS.forEach(t=>per[t.id]={vals:[]});
+ ms.forEach(m=>{const l=latestPerTopic(m,f);TOPICS.forEach(t=>{if(l[t.id]!=null)per[t.id].vals.push(l[t.id])})});
+ TOPICS.forEach(t=>{const v=per[t.id].vals;const p=per[t.id];p.n=v.length;p.avg=v.length?Math.round(v.reduce((x,y)=>x+y,0)/v.length):null;p.lv=level(p.avg);
+  p.cnt={strong:0,dev:0,review:0};v.forEach(x=>p.cnt[level(x)]++);p.pctReview=v.length?Math.round(p.cnt.review/v.length*100):null});
+ const sc=ms.map(m=>{const l=AT.filter(a=>a.st===m&&inF(a,f)).sort((x,y)=>y.at-x.at)[0];return analyze(l).score});
+ return{n:ms.length,per,avg:sc.length?Math.round(sc.reduce((x,y)=>x+y,0)/sc.length):null};
+}
+function rec(topic,m){ // กฎสำเร็จรูป
+ const nxt=TOPICS[TOPICS.findIndex(t=>t.id===topic.id)+1];
+ if(m==null)return{act:'ยังไม่มีข้อมูล ลองทำแบบทดสอบที่ครอบคลุมหัวข้อนี้',next:'ทำแบบทดสอบที่เปิดอยู่'};
+ if(m<TH.dev)return{act:'ทบทวนแนวคิดพื้นฐานของหัวข้อนี้ และดูตัวอย่างพร้อมเฉลยทีละขั้น',next:'ทำแบบฝึกหัดง่ายๆ 3–5 ข้อ แล้วทำแบบทดสอบซ้ำ'};
+ if(m<TH.strong)return{act:'ฝึกทำโจทย์เพิ่มเติมในหัวข้อนี้',next:'ทบทวนข้อที่ตอบพลาดแล้วลองทำซ้ำ'};
+ return{act:'เข้าใจหัวข้อนี้ได้ดีแล้ว',next:nxt?`ไปต่อที่หัวข้อ “${nxt.name}”`:'ลองโจทย์ท้าทายหรือประยุกต์ใช้'};
+}
+
+/* ===== UI STATE ===== */
+const S={role:'teacher',view:'dash',f:{a:'',days:0},sel:null,exam:null,result:null};
+const NAV={teacher:[['dash','layout-dashboard','ภาพรวม'],['cls','users','ห้องเรียน'],['asm','clipboard-list','แบบทดสอบ'],['set','settings','ตั้งค่าเกณฑ์']],
+ student:[['sdash','school','ภาพรวม'],['sasm','clipboard-list','แบบทดสอบ'],['sprog','trending-up','ความก้าวหน้า']]};
+let charts=[];
+function toast(m){const t=$('#toast');t.innerHTML=ic('circle-check')+esc(m);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2300)}
+function render(){charts.forEach(c=>c.destroy());charts=[];
+ document.querySelectorAll('[data-r]').forEach(b=>b.classList.toggle('on',b.dataset.r===S.role));
+ $('#nav').innerHTML=NAV[S.role].map(([k,i,l])=>`<button data-v="${k}" class="${S.view===k?'on':''}">${ic(i)}<span>${l}</span></button>`).join('');
+ $('#view').innerHTML=V[S.view]();(AF[S.view]||(()=>{}))();}
+document.addEventListener('click',e=>{
+ const r=e.target.closest('[data-r]');if(r){S.role=r.dataset.r;S.view=NAV[S.role][0][0];S.exam=null;S.result=null;return render()}
+ const v=e.target.closest('[data-v]');if(v){S.view=v.dataset.v;S.exam=null;S.result=null;return render()}
+ const d=e.target.closest('[data-do]');if(d)DO[d.dataset.do](d.dataset);
+});
+document.addEventListener('change',e=>{const f=e.target.dataset.f;if(f){S.f[f]=f==='days'?+e.target.value:e.target.value;S.sel=null;render()}});
+const head=(t,s)=>`<h1>${t}</h1><p class="sub">${s}</p>`;
+const bd=l=>`<span class="badge b-${l}">${LBL[l]}</span>`;
+const stat=(n,l)=>`<div class="card stat"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+const tiles=(per,sel,click)=>`<div class="tiles">${TOPICS.map(t=>{const p=per[t.id];const m=p.avg!==undefined?p.avg:p.m;return`<button class="tile t-${level(m)} ${sel===t.id?'sel':''}" ${click?`data-do="seltopic" data-id="${t.id}"`:'disabled'}><b>${t.name}</b><span>${m==null?'—':m+'%'}</span><div style="font-size:12px">${LBL[level(m)]}</div></button>`}).join('')}</div>`;
+const legend=`<div class="row" style="margin-top:12px">${['strong','dev','review','na'].map(bd).join('')}</div>`;
+
+const V={
+ dash:()=>{const g=classAgg(S.f);const gaps=TOPICS.filter(t=>g.per[t.id].avg!=null).sort((a,b)=>g.per[a.id].avg-g.per[b.id].avg);
+  const filt=`<div class="card row" style="margin-bottom:16px"><div style="flex:1;min-width:140px"><label>ห้องเรียน</label><select disabled><option>${CLASS.name}</option></select></div><div style="flex:1;min-width:120px"><label>วิชา</label><select disabled><option>${CLASS.subject}</option></select></div>
+  <div style="flex:2;min-width:180px"><label>แบบทดสอบ</label><select data-f="a"><option value="">ทั้งหมด</option>${A.map(a=>`<option value="${a.id}" ${S.f.a===a.id?'selected':''}>${esc(a.title)}</option>`).join('')}</select></div>
+  <div style="flex:1;min-width:130px"><label>ช่วงเวลา</label><select data-f="days"><option value="0">ทั้งหมด</option><option value="14" ${S.f.days===14?'selected':''}>14 วันล่าสุด</option><option value="30" ${S.f.days===30?'selected':''}>30 วันล่าสุด</option></select></div></div>`;
+  if(!g.n)return head('ภาพรวมห้องเรียน',CLASS.name)+filt+'<div class="card empty">ยังไม่มีผลการทำแบบทดสอบตามตัวกรองนี้</div>';
+  const small=g.n<MIN_N;const sel=S.sel&&g.per[S.sel];
+  return head('ภาพรวมห้องเรียน',`${CLASS.name} · รหัสเข้าร่วม <b>${CLASS.code}</b>`)+filt+
+  `<div class="grid g4">${stat(members.length,'นักเรียนทั้งหมด')}${stat(A.length,'แบบทดสอบทั้งหมด')}${stat(g.avg+'%','คะแนนเฉลี่ยห้อง')}${stat(g.n,'นักเรียนที่ถูกประเมิน')}</div>
+  ${small?`<div class="note warnbox" style="margin-top:16px">${ic('lock')}<span>มีผู้ทำแบบทดสอบน้อยกว่า ${MIN_N} คน ระบบจึงซ่อนรายละเอียดเชิงกลุ่ม เพื่อไม่ให้ระบุตัวบุคคลได้</span></div>`:
+  `<div class="grid g2" style="margin-top:16px"><div class="card"><h3>ค่าเฉลี่ยความเข้าใจรายหัวข้อ</h3><div class="cb"><canvas id="c1"></canvas></div></div>
+  <div class="card"><h3>แผนที่ความรู้ของห้อง (คลิกหัวข้อเพื่อดูรายละเอียด)</h3>${tiles(g.per,S.sel,true)}${legend}</div></div>
+  ${sel?`<div class="card" style="margin-top:16px"><h3>${TOPICS.find(t=>t.id===S.sel).name} — ข้อมูลรวมของห้อง</h3><div class="grid g4">${stat(sel.avg+'%','ค่าเฉลี่ย')}${stat(sel.cnt.strong,'เข้าใจดี (คน)')}${stat(sel.cnt.dev,'กำลังพัฒนา (คน)')}${stat(sel.cnt.review+' ('+sel.pctReview+'%)','ควรทบทวน (คน)')}</div></div>`:''}
+  <div class="grid g2" style="margin-top:16px"><div class="card"><h3>หัวข้อที่มีช่องว่างมากที่สุด</h3><div class="list">${gaps.slice(0,3).map(t=>`<div class="it row sp"><span>${t.name}</span><span>${bd(g.per[t.id].lv)} <b>${g.per[t.id].avg}%</b> · ${g.per[t.id].pctReview}% ควรทบทวน</span></div>`).join('')}</div></div>
+  <div class="card"><h3>แนวทางการสอนที่แนะนำ</h3><div class="list">${gaps.slice(0,2).map(t=>{const p=g.per[t.id];return`<div class="it">${ic('lightbulb')} <b>${t.name}</b><div style="color:var(--mut);font-size:14px">${p.pctReview>=30?`นักเรียน ${p.pctReview}% ควรทบทวน — พิจารณาสอนซ้ำทั้งห้องด้วยตัวอย่างที่ต่างจากเดิม`:p.avg<TH.strong?'พิจารณาเพิ่มแบบฝึกหัดกลุ่มย่อย':'ห้องเข้าใจหัวข้อนี้ดี'}</div></div>`}).join('')}</div></div></div>
+  <div class="card" style="margin-top:16px"><h3>กิจกรรมล่าสุด</h3><div class="list">${AT.filter(a=>inF(a,S.f)).sort((x,y)=>y.at-x.at).slice(0,4).map(a=>`<div class="it row sp"><span>มีผู้ส่ง “${esc(A.find(x=>x.id===a.a).title)}”</span><span class="badge">${new Date(a.at).toLocaleDateString('th-TH')}</span></div>`).join('')}</div></div>`}
+  <p style="color:var(--mut);font-size:13px;margin-top:16px">ผลเป็นหลักฐานของความเข้าใจ ณ ขณะนั้น ไม่ใช่การตัดสินความสามารถถาวรของนักเรียน และไม่แสดงอันดับรายบุคคล</p>`},
+ cls:()=>head('ห้องเรียน',CLASS.desc)+`<div class="grid g2"><div class="card"><h3>ข้อมูลห้อง</h3><table><tr><th>ชื่อ</th><td>${CLASS.name}</td></tr><tr><th>วิชา</th><td>${CLASS.subject}</td></tr><tr><th>ระดับชั้น</th><td>${CLASS.grade}</td></tr><tr><th>รหัสเข้าร่วม</th><td><b>${CLASS.code}</b></td></tr></table></div>
+  <div class="card"><h3>หัวข้อการเรียนรู้</h3><div class="list">${TOPICS.map((t,i)=>`<div class="it">${i+1}. ${t.name} <span class="badge">${Q.filter(q=>q.t===t.id).length} ข้อในคลัง</span></div>`).join('')}</div></div></div>
+  <div class="card" style="margin-top:16px"><h3>สมาชิก (${members.length})</h3><div class="list">${members.map((m,i)=>`<div class="it row sp"><span>${m===ME?'นักเรียนเดโม (บัญชีที่ใช้ทดลองฝั่งนักเรียน)':'นักเรียน '+String(i).padStart(2,'0')}</span>${m===ME?'':`<button class="btn sm gh" data-do="rm" data-id="${m}">${ic('trash-2')}นำออก</button>`}</div>`).join('')}</div></div>`,
+ asm:()=>head('แบบทดสอบ','สร้าง เผยแพร่ และเพิ่มคำถามที่ผูกกับหัวข้อ')+A.map(a=>`<div class="card" style="margin-bottom:12px"><div class="row sp"><b>${esc(a.title)}</b><span class="badge ${a.pub?'b-strong':''}">${a.pub?'เผยแพร่แล้ว':'ฉบับร่าง'}</span></div>
+  <p style="color:var(--mut);margin:6px 0">${a.qs.length} ข้อ · หัวข้อ: ${[...new Set(a.qs.map(id=>Q.find(q=>q.id===id).t))].map(t=>TOPICS.find(x=>x.id===t).name).join(', ')} · ${a.retake?'อนุญาตให้ทำซ้ำ':'ทำได้ครั้งเดียว'}</p>
+  <div class="row"><button class="btn sm" data-do="pub" data-id="${a.id}">${a.pub?'ยกเลิกเผยแพร่':'เผยแพร่'}</button><button class="btn sm gh" data-do="retk" data-id="${a.id}">${a.retake?'ปิดการทำซ้ำ':'เปิดการทำซ้ำ'}</button></div></div>`).join('')+
+  `<div class="card"><h3>เพิ่มคำถามเข้าแบบทดสอบ</h3><div class="grid g2"><div><label for="qa">แบบทดสอบ</label><select id="qa">${A.map(a=>`<option value="${a.id}">${esc(a.title)}</option>`).join('')}</select></div><div><label for="qt">หัวข้อ</label><select id="qt">${TOPICS.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select></div></div>
+  <label for="qx">โจทย์</label><textarea id="qx" rows="2"></textarea><div class="grid g2"><div><label for="qy">ประเภท</label><select id="qy"><option value="mc">ปรนัย 4 ตัวเลือก</option><option value="tf">ถูก/ผิด</option></select></div><div><label for="qc">เฉลย (ข้อที่ถูก)</label><select id="qc"><option value="0">ตัวเลือก 1 / ถูก</option><option value="1">ตัวเลือก 2 / ผิด</option><option value="2">ตัวเลือก 3 (ปรนัย)</option><option value="3">ตัวเลือก 4 (ปรนัย)</option></select></div></div>
+  <label>ตัวเลือก (เฉพาะปรนัย)</label><div class="grid g2">${[1,2,3,4].map(i=>`<input id="qo${i}" placeholder="ตัวเลือก ${i}" aria-label="ตัวเลือก ${i}">`).join('')}</div>
+  <label for="qe">คำอธิบายเฉลย</label><input id="qe"><div style="margin-top:14px"><button class="btn" data-do="addq">${ic('plus')}เพิ่มคำถาม</button></div></div>`,
+ set:()=>head('ตั้งค่าเกณฑ์การจัดระดับ','ปรับได้ตามบริบทของห้อง ผลจะคำนวณใหม่ทันที')+`<div class="card" style="max-width:520px"><label for="th1">“เข้าใจดี” เริ่มที่ (%)</label><input id="th1" type="number" min="1" max="100" value="${TH.strong}"><label for="th2">“กำลังพัฒนา” เริ่มที่ (%)</label><input id="th2" type="number" min="0" max="99" value="${TH.dev}">
+  <p style="color:var(--mut);font-size:14px">ต่ำกว่าเกณฑ์ที่สองคือ “ควรทบทวน” · หัวข้อที่ไม่มีคำตอบเลยคือ “ยังไม่ได้ประเมิน” (ไม่ใช่ 0%)</p><button class="btn" data-do="saveth">บันทึก</button></div>`,
+ sdash:()=>{const l=latestPerTopic(ME);const per=Object.fromEntries(TOPICS.map(t=>[t.id,{m:l[t.id]??null}]));const mine=AT.filter(a=>a.st===ME).sort((x,y)=>y.at-x.at);
+  return head('สวัสดี 👋 ยินดีที่ได้เห็นความก้าวหน้าของคุณ','ผลนี้บอกความเข้าใจตอนนี้ ไม่ใช่ตัวตนหรือความสามารถถาวร')+
+  `<div class="grid g3">${stat(1,'ห้องเรียนที่เข้าร่วม')}${stat(A.filter(a=>a.pub).length,'แบบทดสอบที่เปิดอยู่')}${stat(mine.length?analyze(mine[0]).score+'%':'—','คะแนนล่าสุด')}</div>
+  <div class="card" style="margin-top:16px"><h3>แผนที่ความรู้ของฉัน</h3>${tiles(per,null,false)}${legend}</div>
+  <div class="card" style="margin-top:16px"><h3>คำแนะนำสำหรับฉัน</h3><div class="list">${TOPICS.map(t=>({t,m:l[t.id]??null})).sort((a,b)=>(a.m??101)-(b.m??101)).map(({t,m})=>{const r=rec(t,m);return`<div class="it"><div class="row sp"><b>${t.name}</b><span>${bd(level(m))} ${m==null?'':m+'%'}</span></div><div style="font-size:14px">กิจกรรม: ${r.act}</div><div style="font-size:14px;color:var(--mut)">ขั้นต่อไป: ${r.next}</div></div>`}).join('')}</div></div>
+  <div class="card" style="margin-top:16px"><h3>ห้องเรียนของฉัน</h3><div class="it row sp"><span>${CLASS.name}</span><span class="badge">${CLASS.code}</span></div></div>`},
+ sasm:()=>head('แบบทดสอบ','ตอบแล้วจะเห็นเฉลยและคำอธิบายเฉพาะผลของคุณ')+
+  A.filter(a=>a.pub).map(a=>{const mine=AT.filter(x=>x.st===ME&&x.a===a.id).sort((x,y)=>y.at-x.at);const can=!mine.length||a.retake;
+   return`<div class="card" style="margin-bottom:12px"><div class="row sp"><b>${esc(a.title)}</b><span class="badge">${a.qs.length} ข้อ</span></div><div class="row sp" style="margin-top:10px"><span style="color:var(--mut)">${mine.length?`ทำแล้ว ${mine.length} ครั้ง · ล่าสุด ${analyze(mine[0]).score}%`:'ยังไม่ได้ทำ'}</span>
+   <div class="row">${mine.length?`<button class="btn sm gh" data-do="viewres" data-id="${mine[0].id}">ดูผลล่าสุด</button>`:''}<button class="btn sm" data-do="start" data-id="${a.id}" ${can?'':'disabled'}>${mine.length?'ทำอีกครั้ง':'เริ่มทำ'}</button></div></div></div>`}).join('')+
+  `<div class="card"><h3>เข้าร่วมห้องเรียนด้วยรหัส</h3><div class="row"><input id="jc" placeholder="เช่น EDU-4821" style="max-width:240px" aria-label="รหัสห้องเรียน"><button class="btn" data-do="join">เข้าร่วม</button></div></div>`,
+ sprog:()=>{const mine=AT.filter(a=>a.st===ME&&a.a==='a1').sort((x,y)=>x.at-y.at);
+  if(mine.length<2)return head('ความก้าวหน้า','เปรียบเทียบผลจากแบบทดสอบฉบับเดียวกัน')+'<div class="card empty">ทำแบบทดสอบ “สมการเชิงเส้นตัวแปรเดียว” อีกครั้ง เพื่อดูการเปลี่ยนแปลง</div>';
+  const a=analyze(mine[mine.length-2]),b=analyze(mine[mine.length-1]);
+  return head('ความก้าวหน้า','เปรียบเทียบเฉพาะแบบทดสอบที่ครอบคลุมหัวข้อเดียวกันและระดับความยากเท่ากัน')+
+  `<div class="card"><h3>พัฒนาการของความเข้าใจรายหัวข้อ</h3><div class="cb"><canvas id="c3"></canvas></div></div>
+  <div class="card" style="margin-top:16px"><h3>เทียบครั้งก่อนกับครั้งล่าสุด</h3><table><tr><th>หัวข้อ</th><th>ก่อนหน้า</th><th>ล่าสุด</th><th>เปลี่ยนแปลง</th></tr>${TOPICS.map(t=>{const x=a.per[t.id].m,y=b.per[t.id].m;const d=x!=null&&y!=null?y-x:null;return`<tr><td>${t.name}</td><td>${x??'—'}</td><td>${y??'—'}</td><td class="${d>0?'ok':d<0?'no':''}">${d==null?'—':(d>0?'+':'')+d}</td></tr>`}).join('')}<tr><td><b>คะแนนรวม</b></td><td>${a.score}</td><td>${b.score}</td><td><b>${b.score-a.score>0?'+':''}${b.score-a.score}</b></td></tr></table>
+  <p style="color:var(--mut);font-size:13px">ผลที่เปลี่ยนไปแสดงความแตกต่างระหว่างสองครั้ง ไม่ได้ยืนยันว่าเกิดจากสาเหตุใดสาเหตุหนึ่ง</p></div>`},
+ exam:()=>{const e=S.exam,a=A.find(x=>x.id===e.a),qs=a.qs.map(id=>Q.find(q=>q.id===id)),q=qs[e.i];const done=Object.keys(e.ans).length;
+  return`<div class="row sp"><h1 style="font-size:20px">${esc(a.title)}</h1><button class="btn sm gh" data-do="leave">ออก</button></div>
+  <div class="bar" style="margin:8px 0 4px"><i style="width:${done/qs.length*100}%"></i></div><div style="color:var(--mut);font-size:13px;margin-bottom:14px">ตอบแล้ว ${done} / ${qs.length} ข้อ</div>
+  <div class="card"><div style="color:var(--mut);font-size:13px">ข้อ ${e.i+1} · ${q.pt} คะแนน</div><h3 style="font-size:18px;margin:6px 0 4px">${esc(q.text)}</h3>
+  ${q.o.map((o,k)=>`<button class="opt ${e.ans[q.id]===k?'on':''}" data-do="pick" data-q="${q.id}" data-k="${k}"><span class="r"></span>${esc(o)}</button>`).join('')}
+  <div class="row sp" style="margin-top:18px"><button class="btn gh" data-do="nav" data-d="-1" ${e.i?'':'disabled'}>${ic('chevron-left')}ก่อนหน้า</button>${e.i<qs.length-1?`<button class="btn" data-do="nav" data-d="1">ถัดไป${ic('chevron-right')}</button>`:`<button class="btn" data-do="confirm">ส่งคำตอบ</button>`}</div></div>
+  <div class="card" style="margin-top:14px"><div class="chips">${qs.map((x,k)=>`<button class="chip ${k===e.i?'cur':e.ans[x.id]!=null?'ans':''}" data-do="go" data-i="${k}" aria-label="ข้อ ${k+1} ${e.ans[x.id]!=null?'ตอบแล้ว':'ยังไม่ตอบ'}">${k+1}</button>`).join('')}</div></div>`},
+ res:()=>{const at=AT.find(x=>x.id===S.result),a=A.find(x=>x.id===at.a),r=analyze(at);
+  return head('ผลของคุณ',esc(a.title))+`<div class="grid g2"><div class="card stat"><div class="n">${r.score}%</div><div class="l">ได้ ${r.got} จาก ${r.tot} คะแนน</div></div><div class="card"><h3>ความเข้าใจรายหัวข้อ</h3>${tiles(Object.fromEntries(TOPICS.map(t=>[t.id,{m:r.per[t.id].m}])),null,false)}</div></div>
+  <div class="card" style="margin-top:16px"><h3>เฉลยและคำอธิบาย</h3><div class="list">${a.qs.map((id,k)=>{const q=Q.find(x=>x.id===id),v=at.ans[id];return`<div class="it"><b>${k+1}. ${esc(q.text)}</b><div class="${v===q.c?'ok':'no'}">${v==null?'ไม่ได้ตอบ':'คำตอบของคุณ: '+esc(q.o[v])}</div>${v===q.c?'':`<div>เฉลย: ${esc(q.o[q.c])}</div>`}<div style="color:var(--mut);font-size:14px">${esc(q.ex)}</div></div>`}).join('')}</div></div>
+  <div style="margin-top:16px"><button class="btn" data-v="sdash">ดูแผนที่ความรู้และคำแนะนำ</button></div>`},
+};
+const AF={
+ dash:()=>{if(!$('#c1'))return;const g=classAgg(S.f);charts.push(new Chart($('#c1'),{type:'bar',data:{labels:TOPICS.map(t=>t.name),datasets:[{data:TOPICS.map(t=>g.per[t.id].avg),backgroundColor:'#4F46E5',borderRadius:6}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100}}}}))},
+ sprog:()=>{if(!$('#c3'))return;const mine=AT.filter(a=>a.st===ME&&a.a==='a1').sort((x,y)=>x.at-y.at);const cols=['#4F46E5','#60A5FA','#F59E0B','#16A34A'];
+  charts.push(new Chart($('#c3'),{type:'line',data:{labels:mine.map((_,i)=>'ครั้งที่ '+(i+1)),datasets:TOPICS.map((t,k)=>({label:t.name,data:mine.map(a=>analyze(a).per[t.id].m),borderColor:cols[k],backgroundColor:cols[k],tension:.25}))},options:{maintainAspectRatio:false,scales:{y:{min:0,max:100}},plugins:{legend:{position:'bottom',labels:{boxWidth:10}}}}}))},
+};
+const modal=h=>$('#modal').innerHTML=h?`<div class="modal"><div class="card">${h}</div></div>`:'';
+const DO={
+ seltopic:d=>{S.sel=S.sel===d.id?null:d.id;render()},
+ rm:d=>{members=members.filter(m=>m!==d.id);toast('นำสมาชิกออกแล้ว');render()},
+ pub:d=>{const a=A.find(x=>x.id===d.id);a.pub=!a.pub;toast(a.pub?'เผยแพร่แล้ว':'ยกเลิกเผยแพร่แล้ว');render()},
+ retk:d=>{const a=A.find(x=>x.id===d.id);a.retake=!a.retake;render()},
+ addq:()=>{const x=$('#qx').value.trim(),y=$('#qy').value,c=+$('#qc').value;let o=y==='tf'?TF:[1,2,3,4].map(i=>$('#qo'+i).value.trim());
+  if(!x)return toast('กรุณาใส่โจทย์');if(y==='mc'&&o.some(v=>!v))return toast('กรุณากรอกตัวเลือกให้ครบ 4 ข้อ');if(c>=o.length)return toast('เฉลยต้องอยู่ในตัวเลือกที่มี');
+  const q={id:'q'+(Date.now()%1e7),t:$('#qt').value,type:y,text:x,o,c,ex:$('#qe').value.trim()||'—',pt:1};Q.push(q);A.find(a=>a.id===$('#qa').value).qs.push(q.id);toast('เพิ่มคำถามแล้ว');render()},
+ saveth:()=>{const s=+$('#th1').value,d=+$('#th2').value;if(!(s>d&&d>=0&&s<=100))return toast('เกณฑ์ “เข้าใจดี” ต้องมากกว่า “กำลังพัฒนา”');TH={strong:s,dev:d};toast('บันทึกเกณฑ์แล้ว');render()},
+ start:d=>{S.exam={a:d.id,i:0,ans:{},busy:false};S.view='exam';render()},
+ pick:d=>{S.exam.ans[d.q]=+d.k;render()},
+ nav:d=>{S.exam.i+=+d.d;render()},go:d=>{S.exam.i=+d.i;render()},
+ leave:()=>{S.exam=null;S.view='sasm';render()},
+ confirm:()=>{const a=A.find(x=>x.id===S.exam.a),un=a.qs.length-Object.keys(S.exam.ans).length;
+  modal(`<h3>ส่งคำตอบ?</h3><p>${un?`ยังมี ${un} ข้อที่ยังไม่ได้ตอบ ข้อเหล่านี้จะไม่นับเป็นคะแนน และหัวข้อที่ไม่มีคำตอบเลยจะแสดงเป็น “ยังไม่ได้ประเมิน”`:'ตอบครบทุกข้อแล้ว'}</p><div class="row"><button class="btn" data-do="submit">ยืนยันส่ง</button><button class="btn gh" data-do="cancel">กลับไปตรวจ</button></div>`)},
+ cancel:()=>modal(''),
+ submit:()=>{if(!S.exam||S.exam.busy)return;S.exam.busy=true;modal('');const at={id:'me'+Date.now(),st:ME,a:S.exam.a,at:Date.now(),ans:{...S.exam.ans}};AT.push(at);S.result=at.id;S.exam=null;S.view='res';toast('ส่งคำตอบแล้ว');render()},
+ viewres:d=>{S.result=d.id;S.view='res';render()},
+ join:()=>{const c=$('#jc').value.trim().toUpperCase();if(c===CLASS.code)return toast('คุณอยู่ในห้องนี้แล้ว (ป้องกันการเข้าร่วมซ้ำ)');toast('ไม่พบรหัสห้องเรียนนี้')},
+};
+render();
+</script>
+</body>
+</html>
