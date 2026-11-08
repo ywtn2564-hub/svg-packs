@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Classroom Pulse — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f6f7f9;--surface:#fff;--ink:#1c2430;--muted:#6a7585;--line:#e4e8ee;--brand:#0f766e;--brand-soft:#e1f3f1;--warn:#b45309;--warn-soft:#fdf1dd;--ok:#15803d;--ok-soft:#e3f5e8;--bad:#b91c1c;--r:14px}
+*{box-sizing:border-box}body{margin:0;font-family:'Noto Sans Thai',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button{font:inherit;cursor:pointer}
+.demo{background:var(--warn-soft);color:var(--warn);font-size:13px;padding:8px 16px;text-align:center;border-bottom:1px solid #f0d9a8}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 36px)}
+aside{background:var(--surface);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:calc(100vh - 36px)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;padding:4px 10px 14px}
+.logo .dot{width:34px;height:34px;border-radius:10px;background:var(--brand);color:#fff;display:grid;place-items:center}
+.nav button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;padding:11px 12px;border-radius:10px;color:var(--muted);font-weight:500;text-align:left}
+.nav button:hover{background:var(--bg)}.nav button.on{background:var(--brand-soft);color:var(--brand)}
+.role{margin-top:auto;border:1px solid var(--line);border-radius:12px;padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.role button{border:0;background:none;padding:8px;border-radius:8px;font-size:14px;color:var(--muted);font-weight:500}.role button.on{background:var(--ink);color:#fff}
+main{padding:28px 32px 64px;max-width:1100px;width:100%}
+h1{font-size:24px;margin:0 0 4px}.sub{color:var(--muted);margin:0 0 24px}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:1fr 1fr}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.card h3{margin:0 0 12px;font-size:16px}
+.stat .n{font-size:30px;font-weight:700;line-height:1.1}.stat .l{color:var(--muted);font-size:13px}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--bg);color:var(--muted)}
+.tag.Proposed{background:#eef1f6;color:#475569}.tag.Voting{background:var(--warn-soft);color:var(--warn)}.tag.Planned{background:#e6eefc;color:#1d4ed8}.tag.InProgress{background:var(--brand-soft);color:var(--brand)}.tag.Completed{background:var(--ok-soft);color:var(--ok)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;background:var(--brand);color:#fff;padding:10px 16px;border-radius:10px;font-weight:600}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:6px 12px;font-size:13px}.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,.nav button:focus-visible,textarea:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #7fd1c8;outline-offset:2px}
+textarea,select,input{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+label{font-weight:600;font-size:14px;display:block;margin:14px 0 6px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sp{justify-content:space-between}
+.list>*+*{border-top:1px solid var(--line)}.item{padding:14px 0}
+.scale{display:flex;gap:8px}.scale button{flex:1;padding:12px 0;border:1px solid var(--line);background:#fff;border-radius:10px;font-weight:600}.scale button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.q{padding:14px 0;border-top:1px solid var(--line)}.q:first-of-type{border-top:0}
+.bar{height:8px;background:var(--bg);border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--brand)}
+.note{display:flex;gap:10px;background:var(--brand-soft);color:#0b4f49;padding:12px 14px;border-radius:12px;font-size:14px;margin-bottom:16px}
+.empty{text-align:center;color:var(--muted);padding:28px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;display:flex;gap:10px;align-items:center;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}.toast.show{opacity:1}
+.chartbox{position:relative;height:260px}
+@media(max-width:860px){.app{grid-template-columns:1fr}aside{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;flex-direction:row;padding:6px;z-index:5;border-right:0;border-top:1px solid var(--line);overflow-x:auto}.logo,.role{display:none}.nav{display:flex;width:100%}.nav button{flex-direction:column;gap:2px;font-size:11px;padding:6px 4px;text-align:center;align-items:center;justify-content:center}.g4{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}main{padding:20px 16px 110px}.mrole{display:flex!important}}
+.mrole{display:none;gap:6px;margin-bottom:16px}.mrole button{flex:1;border:1px solid var(--line);background:#fff;padding:8px;border-radius:10px}.mrole button.on{background:var(--ink);color:#fff}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="demo">⚠️ โหมดเดโม — ข้อมูลทั้งหมดเป็นข้อมูลตัวอย่างในหน่วยความจำของเบราว์เซอร์ ยังไม่เชื่อม Firebase และจะรีเซ็ตเมื่อรีเฟรช</div>
+<div class="app">
+<aside>
+  <div class="logo"><span class="dot"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21v-6" />
+  <path d="M12 21V3" />
+  <path d="M19 21V9" /></svg></span>Classroom Pulse</div>
+  <nav class="nav" id="nav"></nav>
+  <div class="role" id="role"><button data-r="teacher">ครู</button><button data-r="student">นักเรียน</button></div>
+</aside>
+<main>
+  <div class="mrole" id="mrole"><button data-r="teacher">ครู</button><button data-r="student">นักเรียน</button></div>
+  <div id="view"></div>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ICONS={"chart-no-axes-column": "<path d=\"M5 21v-6\" />\n  <path d=\"M12 21V3\" />\n  <path d=\"M19 21V9\" />", "circle-check": "<circle cx=\"12\" cy=\"12\" r=\"10\" />\n  <path d=\"m9 12 2 2 4-4\" />", "clipboard-check": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" />\n  <path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" />\n  <path d=\"m9 14 2 2 4-4\" />", "layout-dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\" />\n  <rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\" />\n  <rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\" />\n  <rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" />", "lock-keyhole": "<circle cx=\"12\" cy=\"16\" r=\"1\" />\n  <rect x=\"3\" y=\"10\" width=\"18\" height=\"12\" rx=\"2\" />\n  <path d=\"M7 10V7a5 5 0 0 1 10 0v3\" />", "message-square-heart": "<path d=\"M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z\" />\n  <path d=\"M7.5 9.5c0 .687.265 1.383.697 1.844l3.009 3.264a1.14 1.14 0 0 0 .407.314 1 1 0 0 0 .783-.004 1.14 1.14 0 0 0 .398-.31l3.008-3.264A2.77 2.77 0 0 0 16.5 9.5 2.5 2.5 0 0 0 12 8a2.5 2.5 0 0 0-4.5 1.5\" />", "plus": "<path d=\"M5 12h14\" />\n  <path d=\"M12 5v14\" />", "school": "<path d=\"M14 21v-3a2 2 0 0 0-4 0v3\" />\n  <path d=\"M18 5v16\" />\n  <path d=\"m4 6 7.106-3.79a2 2 0 0 1 1.788 0L20 6\" />\n  <path d=\"m6 11-3.52 2.147a1 1 0 0 0-.48.854V19a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-.48-.853L18 11\" />\n  <path d=\"M6 5v16\" />\n  <circle cx=\"12\" cy=\"9\" r=\"2\" />", "sparkles": "<path d=\"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z\" />\n  <path d=\"M20 2v4\" />\n  <path d=\"M22 4h-4\" />\n  <circle cx=\"4\" cy=\"20\" r=\"2\" />", "target": "<circle cx=\"12\" cy=\"12\" r=\"10\" />\n  <circle cx=\"12\" cy=\"12\" r=\"6\" />\n  <circle cx=\"12\" cy=\"12\" r=\"2\" />", "trending-up": "<path d=\"M16 7h6v6\" />\n  <path d=\"m22 7-8.5 8.5-5-5L2 17\" />", "vote": "<path d=\"m9 12 2 2 4-4\" />\n  <path d=\"M5 7c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v12H5V7Z\" />\n  <path d=\"M22 19H2\" />"};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
+const MIN_N=5; // ขั้นต่ำผู้ตอบก่อนแสดงกราฟ (ป้องกันการระบุตัวบุคคล)
+const CATS=['Classroom Environment','Learning Experience','Social Relationships','Classroom Activities','Suggestions'];
+const DIMS=['การมีส่วนร่วม','การทำงานร่วมกับเพื่อน','ความเหมาะสมของภาระงาน','บรรยากาศการเรียนรู้'];
+const STATUS=['Proposed','Voting','Planned','In Progress','Completed'];
+const S={
+ role:'teacher',view:'dash',
+ cls:{name:'ม.5/2 — วิชาสังคมศึกษา',code:'PULSE-7K2Q',members:28},
+ weeks:['สัปดาห์ 1','สัปดาห์ 2','สัปดาห์ 3','สัปดาห์ 4','สัปดาห์ 5','สัปดาห์ 6'],
+ scores:[[2.8,3.2,3.0,3.3],[2.7,3.1,2.9,3.2],[2.8,3.0,3.1,3.4],[3.3,3.2,3.2,3.5],[3.7,3.4,3.3,3.7],[4.0,3.6,3.4,3.9]],
+ respondents:[19,21,20,22,23,22],
+ surveyDone:false,
+ feedback:[
+  {id:1,cat:CATS[1],text:'อยากให้มีเวลาทำโจทย์ในคาบมากขึ้น ไม่รีบเฉลย',status:'รับทราบ',likes:9},
+  {id:2,cat:CATS[3],text:'อยากลองเรียนแบบกลุ่มย่อยบ่อยขึ้น',status:'กำลังดำเนินการ',likes:14},
+  {id:3,cat:CATS[0],text:'ห้องร้อนช่วงบ่าย อยากให้เปิดพัดลมเพิ่ม',status:'รอตรวจสอบ',likes:6},
+ ],
+ actions:[
+  {id:1,title:'คาบกลุ่มย่อยทุกวันพฤหัสบดี',desc:'แบ่งกลุ่ม 4 คน ทำกิจกรรมแก้โจทย์ร่วมกัน 20 นาทีท้ายคาบ',status:'Completed',days:'4 สัปดาห์',votes:19,voted:true,result:'นักเรียนกล้าแสดงความเห็นมากขึ้น กลุ่มหมุนสมาชิกทุกสัปดาห์',before:2.8,after:4.0,dim:0},
+  {id:2,title:'ช่วงถามตอบแบบไม่ระบุชื่อต้นคาบ',desc:'เปิดกล่องคำถามให้ส่งก่อนเริ่มเรียน 5 นาที',status:'In Progress',days:'3 สัปดาห์',votes:16,voted:false},
+  {id:3,title:'ปรับตารางส่งงานไม่ให้ชนกัน',desc:'ครูประสานกับครูวิชาอื่นเพื่อกระจายกำหนดส่ง',status:'Voting',days:'2 สัปดาห์',votes:7,voted:false},
+ ],
+};
+const NAV={teacher:[['dash','layout-dashboard','ภาพรวม'],['fb','message-square-heart','ข้อเสนอแนะ'],['act','target','กิจกรรม'],['imp','trending-up','ผลลัพธ์']],
+ student:[['home','school','ห้องของฉัน'],['survey','clipboard-check','แบบสำรวจ'],['voice','lock-keyhole','ส่งความเห็น'],['vote','vote','โหวต']]};
+const $=s=>document.querySelector(s);let charts=[];
+function toast(m){const t=$('#toast');t.innerHTML=ic('circle-check')+m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function avg(i){return +(S.scores[S.scores.length-1][i]).toFixed(1)}
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function setRole(r){S.role=r;S.view=NAV[r][0][0];render()}
+function render(){
+ charts.forEach(c=>c.destroy());charts=[];
+ document.querySelectorAll('[data-r]').forEach(b=>b.classList.toggle('on',b.dataset.r===S.role));
+ $('#nav').innerHTML=NAV[S.role].map(([k,i,l])=>`<button data-v="${k}" class="${S.view===k?'on':''}">${ic(i)}<span>${l}</span></button>`).join('');
+ $('#view').innerHTML=VIEWS[S.view]();
+ (AFTER[S.view]||(()=>{}))();
+}
+document.addEventListener('click',e=>{
+ const r=e.target.closest('[data-r]');if(r)return setRole(r.dataset.r);
+ const v=e.target.closest('[data-v]');if(v){S.view=v.dataset.v;return render()}
+ const a=e.target.closest('[data-do]');if(a)ACT[a.dataset.do](a.dataset);
+});
+const head=(t,s)=>`<h1>${t}</h1><p class="sub">${s}</p>`;
+const stat=(n,l)=>`<div class="card stat"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+const tag=s=>`<span class="tag ${s.replace(' ','')}">${s}</span>`;
+const lastN=()=>S.respondents[S.respondents.length-1];
+
+const VIEWS={
+ dash:()=>{const n=lastN();const live=S.actions.filter(a=>['In Progress','Voting','Planned'].includes(a.status));
+  return head('ภาพรวมห้องเรียน',`${S.cls.name} · รหัสเข้าร่วม <b>${S.cls.code}</b>`)+
+  `<div class="grid g4">${stat(S.cls.members,'สมาชิกในห้อง')}${stat(n+' / '+S.cls.members,'ผู้ตอบแบบสำรวจล่าสุด')}${stat(S.feedback.length,'ข้อเสนอแนะ')}${stat(live.length,'กิจกรรมที่กำลังดำเนินการ')}</div>
+  <div class="grid g2" style="margin-top:16px"><div class="card"><h3>คะแนนเฉลี่ยรายหมวด (สัปดาห์ล่าสุด)</h3>${n>=MIN_N?'<div class="chartbox"><canvas id="c1"></canvas></div>':'<div class="empty">ผู้ตอบน้อยกว่า '+MIN_N+' คน — ซ่อนกราฟเพื่อปกป้องความเป็นส่วนตัว</div>'}</div>
+  <div class="card"><h3>แนวโน้มรายสัปดาห์</h3>${n>=MIN_N?'<div class="chartbox"><canvas id="c2"></canvas></div>':'<div class="empty">ข้อมูลยังไม่เพียงพอ</div>'}</div></div>
+  <div class="card" style="margin-top:16px"><h3>ประเด็นที่ได้รับความสนใจ</h3><div class="list">${[...S.feedback].sort((a,b)=>b.likes-a.likes).slice(0,3).map(f=>`<div class="item row sp"><span>${esc(f.text)}</span><span class="tag">${f.likes} คนเห็นด้วย</span></div>`).join('')}</div></div>`},
+ fb:()=>head('ข้อเสนอแนะ','ไม่แสดงชื่อหรือรหัสผู้ส่ง — ครูเห็นเฉพาะเนื้อหาและหมวดหมู่')+
+  `<div class="note">${ic('lock-keyhole')}<span>ระบบแยกข้อมูลยืนยันสิทธิ์การส่งออกจากเนื้อหา จึงไม่สามารถย้อนดูผู้ส่งได้จากหน้าจอนี้</span></div>
+  <div class="card">${S.feedback.length?`<div class="list">${S.feedback.map(f=>`<div class="item"><div class="row sp"><span class="tag">${f.cat}</span><span class="tag">${f.status}</span></div><p>${esc(f.text)}</p>
+  <div class="row"><select style="max-width:200px" data-sel="${f.id}">${['รอตรวจสอบ','รับทราบ','กำลังดำเนินการ','ดำเนินการแล้ว'].map(s=>`<option ${s===f.status?'selected':''}>${s}</option>`).join('')}</select><button class="btn sm ghost" data-do="setfb" data-id="${f.id}">อัปเดตสถานะ</button></div></div>`).join('')}</div>`:'<div class="empty">ยังไม่มีข้อเสนอแนะ</div>'}</div>`,
+ act:()=>head('Class Action','เปลี่ยนข้อเสนอแนะให้เป็นกิจกรรมที่ทำได้จริง')+
+  `<div class="card" style="margin-bottom:16px"><h3>สร้างกิจกรรมใหม่</h3><label for="at">ชื่อกิจกรรม</label><input id="at" placeholder="เช่น มุมอ่านหนังสือเงียบ"><label for="ad">รายละเอียด</label><textarea id="ad" rows="2"></textarea><div style="margin-top:14px"><button class="btn" data-do="addact">${ic('plus')}สร้างกิจกรรม</button></div></div>`+
+  S.actions.map(a=>`<div class="card" style="margin-bottom:12px"><div class="row sp"><b>${esc(a.title)}</b>${tag(a.status)}</div><p style="margin:6px 0;color:var(--muted)">${esc(a.desc)} · ระยะเวลา ${a.days}</p>
+  <div class="row sp"><span>${a.votes} / ${S.cls.members} โหวต</span><div class="row"><select data-ssel="${a.id}" style="width:auto">${STATUS.map(s=>`<option ${s===a.status?'selected':''}>${s}</option>`).join('')}</select><button class="btn sm" data-do="setst" data-id="${a.id}">เปลี่ยนสถานะ</button></div></div>
+  ${a.result?`<div class="note" style="margin:12px 0 0">${ic('sparkles')}<span>ผลที่บันทึก: ${esc(a.result)}</span></div>`:''}</div>`).join(''),
+ imp:()=>{const done=S.actions.filter(a=>a.status==='Completed'&&a.before);
+  return head('Impact Tracking','เปรียบเทียบคะแนนก่อนและหลังทำกิจกรรม')+(done.length?done.map(a=>`<div class="card" style="margin-bottom:16px"><div class="row sp"><b>${esc(a.title)}</b>${tag('Completed')}</div>
+  <div class="grid g2" style="margin-top:12px"><div class="chartbox"><canvas id="ci${a.id}"></canvas></div><div><div class="stat"><div class="n" style="color:var(--ok)">+${(a.after-a.before).toFixed(1)}</div><div class="l">${DIMS[a.dim]} เปลี่ยนจาก ${a.before} เป็น ${a.after} (เต็ม 5)</div></div><p style="color:var(--muted);font-size:14px">คำนวณจากค่าเฉลี่ยของแบบสำรวจรายสัปดาห์ก่อน/หลังกิจกรรม ใช้ดูแนวโน้มของห้อง ไม่ใช่การประเมินรายบุคคล และไม่ยืนยันว่ากิจกรรมเป็นสาเหตุเพียงอย่างเดียว</p></div></div></div>`).join(''):'<div class="card empty">ยังไม่มีกิจกรรมที่เสร็จสิ้น</div>')},
+ home:()=>head('ห้องของฉัน',S.cls.name)+
+  `<div class="note">${ic('lock-keyhole')}<span>ความเห็นที่ส่งเป็นแบบไม่ระบุตัวตน ครูและเพื่อนจะไม่เห็นชื่อคุณ และระบบไม่ได้ใช้ประเมินตัวนักเรียน</span></div>
+  <div class="grid g2"><div class="card"><h3>แบบสำรวจสัปดาห์นี้</h3>${S.surveyDone?`<span class="tag Completed">ตอบแล้ว ขอบคุณ</span>`:`<p style="color:var(--muted)">ใช้เวลาไม่ถึง 1 นาที</p><button class="btn" data-v="survey">เริ่มตอบ</button>`}</div>
+  <div class="card"><h3>กิจกรรมของห้อง</h3><div class="list">${S.actions.map(a=>`<div class="item row sp"><span>${esc(a.title)}</span>${tag(a.status)}</div>`).join('')}</div></div></div>
+  <div class="card" style="margin-top:16px"><h3>สิ่งที่เปลี่ยนไป</h3>${S.actions.filter(a=>a.result).map(a=>`<p><b>${esc(a.title)}</b><br>${DIMS[a.dim]} จาก ${a.before} → ${a.after}</p>`).join('')||'<div class="empty">ยังไม่มีผลลัพธ์</div>'}</div>`,
+ survey:()=>head('แบบสำรวจรายสัปดาห์','ให้คะแนน 1–5 · ผลแสดงเป็นภาพรวมของห้องเท่านั้น')+(S.surveyDone?`<div class="card empty">${ic('circle-check')}<p>คุณตอบแบบสำรวจสัปดาห์นี้แล้ว (ตอบได้ครั้งเดียวต่อสัปดาห์)</p></div>`:
+  `<div class="card">${DIMS.map((d,i)=>`<div class="q"><b>${d}</b><div class="scale" data-q="${i}" style="margin-top:8px">${[1,2,3,4,5].map(n=>`<button data-do="rate" data-q="${i}" data-n="${n}" aria-label="${d} ${n} คะแนน">${n}</button>`).join('')}</div></div>`).join('')}
+  <label for="sc">อยากบอกอะไรเพิ่มเติม (ไม่บังคับ)</label><textarea id="sc" rows="3"></textarea><div style="margin-top:14px"><button class="btn" id="sub" data-do="submitsv" disabled>ส่งแบบสำรวจ</button></div></div>`),
+ voice:()=>head('ส่งความเห็นแบบไม่ระบุตัวตน','พูดได้เต็มที่ — ไม่มีใครเห็นว่าเป็นคุณ')+
+  `<div class="card"><label for="vc">หมวดหมู่</label><select id="vc">${CATS.map(c=>`<option>${c}</option>`).join('')}</select><label for="vt">ความเห็นของคุณ</label><textarea id="vt" rows="4" maxlength="500"></textarea>
+  <div style="margin-top:14px"><button class="btn" data-do="sendfb">${ic('lock-keyhole')}ส่งแบบไม่ระบุตัวตน</button></div></div>
+  <div class="card" style="margin-top:16px"><h3>สถานะข้อเสนอแนะของห้อง</h3><div class="list">${S.feedback.map(f=>`<div class="item row sp"><span>${esc(f.text)}</span><span class="tag">${f.status}</span></div>`).join('')}</div></div>`,
+ vote:()=>head('โหวตกิจกรรม','เลือกกิจกรรมที่อยากให้ห้องเราทำ')+S.actions.filter(a=>a.status==='Voting').map(a=>`<div class="card" style="margin-bottom:12px"><div class="row sp"><b>${esc(a.title)}</b>${tag(a.status)}</div><p style="color:var(--muted)">${esc(a.desc)}</p>
+  <div class="bar"><i style="width:${a.votes/S.cls.members*100}%"></i></div><div class="row sp" style="margin-top:10px"><span>${a.votes} / ${S.cls.members}</span><button class="btn sm" data-do="vote" data-id="${a.id}" ${a.voted?'disabled':''}>${a.voted?'โหวตแล้ว':'โหวตเห็นด้วย'}</button></div></div>`).join('')||'<div class="card empty">ยังไม่มีกิจกรรมที่เปิดโหวต</div>'
+};
+const AFTER={
+ dash:()=>{if(lastN()<MIN_N)return;
+  charts.push(new Chart($('#c1'),{type:'bar',data:{labels:DIMS,datasets:[{data:DIMS.map((_,i)=>avg(i)),backgroundColor:'#0f766e',borderRadius:6}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:5}}}}));
+  const cols=['#0f766e','#2563eb','#d97706','#7c3aed'];
+  charts.push(new Chart($('#c2'),{type:'line',data:{labels:S.weeks,datasets:DIMS.map((d,i)=>({label:d,data:S.scores.map(r=>r[i]),borderColor:cols[i],backgroundColor:cols[i],tension:.3}))},options:{maintainAspectRatio:false,scales:{y:{min:1,max:5}},plugins:{legend:{position:'bottom',labels:{boxWidth:10}}}}}))},
+ imp:()=>S.actions.filter(a=>a.status==='Completed'&&a.before).forEach(a=>charts.push(new Chart($('#ci'+a.id),{type:'bar',data:{labels:['ก่อน','หลัง'],datasets:[{data:[a.before,a.after],backgroundColor:['#cbd5e1','#0f766e'],borderRadius:6}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:5}}}}))),
+};
+let draft={};
+const ACT={
+ rate:d=>{draft[d.q]=+d.n;document.querySelectorAll(`[data-q="${d.q}"] button`).forEach(b=>b.classList.toggle('on',+b.dataset.n===+d.n));$('#sub').disabled=Object.keys(draft).length<DIMS.length},
+ submitsv:()=>{S.surveyDone=true;S.respondents[S.respondents.length-1]++;draft={};toast('ส่งแบบสำรวจแล้ว');render()},
+ sendfb:()=>{const t=$('#vt').value.trim();if(t.length<5)return toast('กรุณาพิมพ์ความเห็นอย่างน้อย 5 ตัวอักษร');
+  S.feedback.unshift({id:Date.now(),cat:$('#vc').value,text:t,status:'รอตรวจสอบ',likes:0});toast('ส่งแล้ว ไม่มีใครเห็นว่าเป็นคุณ');render()},
+ vote:d=>{const a=S.actions.find(x=>x.id==d.id);if(a.voted)return;a.voted=true;a.votes++;toast('บันทึกโหวตแล้ว');render()},
+ setfb:d=>{const f=S.feedback.find(x=>x.id==d.id);f.status=document.querySelector(`[data-sel="${d.id}"]`).value;toast('อัปเดตสถานะแล้ว');render()},
+ setst:d=>{const a=S.actions.find(x=>x.id==d.id);a.status=document.querySelector(`[data-ssel="${d.id}"]`).value;toast('เปลี่ยนสถานะเป็น '+a.status);render()},
+ addact:()=>{const t=$('#at').value.trim();if(!t)return toast('กรุณาใส่ชื่อกิจกรรม');S.actions.unshift({id:Date.now(),title:t,desc:$('#ad').value.trim()||'—',status:'Proposed',days:'—',votes:0,voted:false});toast('สร้างกิจกรรมแล้ว');render()},
+};
+render();
+</script>
+</body>
+</html>
